@@ -55,7 +55,18 @@ which differ in value, and which are identical.`,
 					fmt.Fprintf(w, "%s\t+B\t(missing)\t%s\n", key, result.OnlyInB[key])
 				}
 			}
-			return w.Flush()
+			if err := w.Flush(); err != nil {
+				return fmt.Errorf("flushing output: %w", err)
+			}
+
+			// Print a summary line after the table.
+			fmt.Fprintf(cmd.OutOrStdout(), "\nSummary: %d same, %d differ, %d only in %s, %d only in %s\n",
+				len(result.Same),
+				len(result.Differ),
+				len(result.OnlyInA), result.ProfileA,
+				len(result.OnlyInB), result.ProfileB,
+			)
+			return nil
 		},
 	}
 
