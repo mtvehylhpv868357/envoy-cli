@@ -42,6 +42,12 @@ func (r *Result) AllKeys() []string {
 	return keys
 }
 
+// HasDifferences reports whether the two profiles differ in any way,
+// i.e. there are keys present in only one profile or keys with different values.
+func (r *Result) HasDifferences() bool {
+	return len(r.OnlyInA) > 0 || len(r.OnlyInB) > 0 || len(r.Differ) > 0
+}
+
 // Profiles compares two profiles by name using the provided store.
 func Profiles(store *profile.Store, nameA, nameB string) (*Result, error) {
 	pA, err := store.Get(nameA)
