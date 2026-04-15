@@ -86,3 +86,16 @@ func (s *Store) Delete(name string) error {
 	}
 	return nil
 }
+
+// Exists reports whether a snapshot with the given name exists in the store.
+func (s *Store) Exists(name string) (bool, error) {
+	path := filepath.Join(s.dir, name+".json")
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, fmt.Errorf("snapshot: stat: %w", err)
+}
