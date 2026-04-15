@@ -55,3 +55,19 @@ func TestProfileCmd_HelpText(t *testing.T) {
 		t.Errorf("expected short description to mention profiles or environment, got: %q", help)
 	}
 }
+
+func TestProfileUseCmd_ValidArg(t *testing.T) {
+	// Ensure that providing exactly one argument satisfies the Args validator.
+	err := profileUseCmd.Args(profileUseCmd, []string{"my-profile"})
+	if err != nil {
+		t.Errorf("unexpected error for valid argument: %v", err)
+	}
+}
+
+func TestProfileDeleteCmd_ValidArg(t *testing.T) {
+	// Ensure that providing exactly one argument satisfies the Args validator.
+	err := profileDeleteCmd.Args(profileDeleteCmd, []string{"my-profile"})
+	if err != nil {
+		t.Errorf("unexpected error for valid argument: %v", err)
+	}
+}
