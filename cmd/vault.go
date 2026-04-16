@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -52,6 +53,10 @@ func init() {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			src := args[0]
+			if !strings.HasSuffix(src, ".vault") {
+				return fmt.Errorf("expected a .vault file, got: %s", filepath.Base(src))
+			}
+
 			ciphertext, err := os.ReadFile(src)
 			if err != nil {
 				return fmt.Errorf("failed to read vault file: %w", err)
