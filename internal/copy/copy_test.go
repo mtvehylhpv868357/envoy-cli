@@ -28,9 +28,17 @@ func makeStore(t *testing.T) *profile.Store {
 	return store
 }
 
+// mustAdd adds a profile to the store and fails the test on error.
+func mustAdd(t *testing.T, store *profile.Store, name string, vars map[string]string) {
+	t.Helper()
+	if err := store.Add(name, vars); err != nil {
+		t.Fatalf("Add %q: %v", name, err)
+	}
+}
+
 func TestCopy_Basic(t *testing.T) {
 	store := makeStore(t)
-	_ = store.Add("dev", map[string]string{"FOO": "bar", "PORT": "8080"})
+	mustAdd(t, store, "dev", map[string]string{"FOO": "bar", "PORT": "8080"})
 
 	if err := copy.Profile(store, "dev", "staging", copy.DefaultOptions()); err != nil {
 		t.Fatalf("unexpected error: %v", err)
@@ -47,7 +55,7 @@ func TestCopy_Basic(t *testing.T) {
 
 func TestCopy_SameName(t *testing.T) {
 	store := makeStore(t)
-	_ = store.Add("dev", map[string]string{"X": "1"})
+	mustAdd(t, store, "dev", map[string]string{"X": "1"})
 
 	err := copy.Profile(store, "dev", "dev", copy.DefaultOptions())
 	if err == nil {
@@ -66,8 +74,8 @@ func TestCopy_SourceNotFound(t *testing.T) {
 
 func TestCopy_DestinationExists_NoOverwrite(t *testing.T) {
 	store := makeStore(t)
-	_ = store.Add("dev", map[string]string{"A": "1"})
-	_ = store.Add("prod", map[string]string{"A": "2"})
+	mustAdd(t, store, "dev", map[string]string{"A": "1"})
+	mustAdd(t, store, "prod", map[string]string{"A": "2"})
 
 	err := copy.Profile(store, "dev", "prod", copy.DefaultOptions())
 	if err == nil {
@@ -77,8 +85,8 @@ func TestCopy_DestinationExists_NoOverwrite(t *testing.T) {
 
 func TestCopy_DestinationExists_WithOverwrite(t *testing.T) {
 	store := makeStore(t)
-	_ = store.Add("dev", map[string]string{"A": "1"})
-	_ = store.Add("prod", map[string]string{"A": "2"})
+	mustAdd(t, store, "dev", map[string]string{"A": "1"})
+	mustAdd(t, store, "prod", map[string]string{"A": "2"})
 
 	opts := copy.Options{Overwrite: true}
 	if err := copy.Profile(store, "dev", "prod", opts); err != nil {
@@ -93,7 +101,7 @@ func TestCopy_DestinationExists_WithOverwrite(t *testing.T) {
 
 func TestCopy_IsolatesVars(t *testing.T) {
 	store := makeStore(t)
-	_ = store.Add("src", map[string]string{"K": "original"})
+	mustAdd(t, store, "src", map[string]string{"K": "original"})
 
 	_ = copy.Profile(store, "src", "dst", copy.DefaultOptions())
 
