@@ -42,6 +42,10 @@ Examples:
 			opts.ValuePattern = valuePattern
 			opts.ExactKey = exactKey
 
+			if opts.KeyPattern == "" && opts.ValuePattern == "" {
+				return fmt.Errorf("at least one of key-pattern or --value must be specified")
+			}
+
 			results, err := search.Profiles(store, opts)
 			if err != nil {
 				return fmt.Errorf("search: %w", err)
