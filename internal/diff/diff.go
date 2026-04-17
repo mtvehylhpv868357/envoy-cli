@@ -54,3 +54,18 @@ func Summary(changes []Change) map[string]int {
 	}
 	return summary
 }
+
+// Filter returns only the changes matching the given action (e.g. "added",
+// "removed", or "modified"). An empty action string returns all changes.
+func Filter(changes []Change, action string) []Change {
+	if action == "" {
+		return changes
+	}
+	var filtered []Change
+	for _, c := range changes {
+		if c.Action == action {
+			filtered = append(filtered, c)
+		}
+	}
+	return filtered
+}
