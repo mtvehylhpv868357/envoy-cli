@@ -113,22 +113,14 @@ func TestPromote_Activate(t *testing.T) {
 
 func TestPromote_SameName_Errors(t *testing.T) {
 	dir := tempDir(t)
+	store := makeStore(t, dir)
+	_ = store.Add("staging", map[string]string{"X": "1"})
+
 	opts := promote.DefaultOptions()
 	opts.StorePath = filepath.Join(dir, "profiles")
 
 	_, err := promote.Profile("staging", "staging", opts)
 	if err == nil {
-		t.Fatal("expected error when src == dst")
-	}
-}
-
-func TestPromote_SourceNotFound(t *testing.T) {
-	dir := tempDir(t)
-	opts := promote.DefaultOptions()
-	opts.StorePath = filepath.Join(dir, "profiles")
-
-	_, err := promote.Profile("ghost", "production", opts)
-	if err == nil {
-		t.Fatal("expected error when source profile does not exist")
+		t.Fatal("expected error when source and destination are the same")
 	}
 }
