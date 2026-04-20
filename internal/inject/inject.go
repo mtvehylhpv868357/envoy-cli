@@ -33,7 +33,7 @@ func IntoMap(dst, src map[string]string, opts Options) map[string]string {
 	return dst
 }
 
-// Intoenviron injects src into an os.Environ-style slice.
+// IntoEnviron injects src into an os.Environ-style slice.
 // Existing entries are updated or appended based on opts.
 func IntoEnviron(environ []string, src map[string]string, opts Options) []string {
 	// Build index of existing positions.
@@ -58,4 +58,18 @@ func IntoEnviron(environ []string, src map[string]string, opts Options) []string
 		}
 	}
 	return environ
+}
+
+// EnvironToMap converts an os.Environ-style slice into a map.
+// Entries that do not contain "=" are skipped. If duplicate keys exist,
+// the last value wins.
+func EnvironToMap(environ []string) map[string]string {
+	result := make(map[string]string, len(environ))
+	for _, entry := range environ {
+		parts := strings.SplitN(entry, "=", 2)
+		if len(parts) == 2 {
+			result[parts[0]] = parts[1]
+		}
+	}
+	return result
 }
