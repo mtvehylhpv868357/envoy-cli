@@ -40,7 +40,19 @@ func init() {
 				if len(parts) != 2 {
 					return fmt.Errorf("invalid key=value pair: %q", pair)
 				}
-				opts.Upsert[parts[0]] = parts[1]
+				key := parts[0]
+				if key == "" {
+					return fmt.Errorf("key must not be empty in pair: %q", pair)
+				}
+				opts.Upsert[key] = parts[1]
+			}
+
+			// Warn if the same key appears in both upsert and delete lists,
+			// since the delete will take precedence and the upsert will have no effect.
+			for _, dk := range deleteKeys {
+				if _, exists := opts.Upsert[dk]; exists {
+					fmt.Fprintf(cmd.ErrOrStderr(), "warning: key %q is listed for both upsert and delete; it will be deleted\n", dk)
+				}
 			}
 
 			result, err := patch.Profile(store, name, opts)
